@@ -2,6 +2,7 @@ using API_Sat_2023II.DAL;
 using API_Sat_2023II.Domain.Interfaces;
 using API_Sat_2023II.Domain.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +14,12 @@ builder.Services.AddControllers();
 //Funciones Anónimas (x => x....) Arrow Functions - Lambda Functions
 builder.Services.AddDbContext<DataBaseContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+//Por cada nuevo servicio/interfaz que yo creo en mi API, debo agregar aquí esa nueva dependencia
 builder.Services.AddScoped<ICountryService, CountryService>();
-//Por cada nuevo servicio/interfaz que yo creo en mi API, debo agregar aquí esa nueva dependencia 
+builder.Services.AddScoped<IStateService, StateService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
