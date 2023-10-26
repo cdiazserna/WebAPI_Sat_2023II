@@ -40,7 +40,7 @@ namespace API_Sat_2023II.Controllers
             {
                 if (ex.Message.Contains("duplicate"))
                 {
-                    return Conflict(String.Format("El país {0} ya existe.", state.Name));
+                    return Conflict(String.Format("El estado/departamento {0} ya existe.", state.Name));
                 }
 
                 return Conflict(ex.Message);
