@@ -16,7 +16,9 @@ namespace API_Sat_2023II.Domain.Services
 
         public async Task<IEnumerable<Country>> GetCountriesAsync()
         {
-            var countries = await _context.Countries.ToListAsync();
+            var countries = await _context.Countries
+                .Include(c => c.States)
+                .ToListAsync();
             return countries; //Aquí lo que hago es traerme todos los datos que tengo en mi tabla Countries.
         }
 
@@ -43,12 +45,16 @@ namespace API_Sat_2023II.Domain.Services
         {
             //return await _context.Countries.FindAsync(id); // FindAsync es un método propio del DbContext (DbSet)
             //return await _context.Countries.FirstAsync(x => x.Id == id); //FirstAsync es un método de EF CORE
-            return await _context.Countries.FirstOrDefaultAsync(c => c.Id == id); //FirstOrDefaultAsync es un método de EF CORE
+            return await _context.Countries
+                .Include(c => c.States)
+                .FirstOrDefaultAsync(c => c.Id == id); //FirstOrDefaultAsync es un método de EF CORE
         }
 
         public async Task<Country> GetCountryByNameAsync(string name)
         {
-            return await _context.Countries.FirstOrDefaultAsync(c => c.Name == name);
+            return await _context.Countries
+                .Include(c => c.States)
+                .FirstOrDefaultAsync(c => c.Name == name);
         }
 
         public async Task<Country> EditCountryAsync(Country country)
@@ -74,7 +80,9 @@ namespace API_Sat_2023II.Domain.Services
             {
                 //Aquí, con el ID que traigo desde el controller, estoy recuperando el país que luego voy a eliminar.
                 //Ese país que recupero lo guardo en la variable country
-                var country = await _context.Countries.FirstOrDefaultAsync(c => c.Id == id);
+                var country = await _context.Countries
+                    .Include(c => c.States) //Cascade removing
+                    .FirstOrDefaultAsync(c => c.Id == id);
                 if (country == null) return null; //Si el país no existe, entonces me retorna un NULL
 
                 _context.Countries.Remove(country);
